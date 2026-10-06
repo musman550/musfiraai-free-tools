@@ -1,0 +1,27 @@
+{
+  "slug": "loan-emi-calculator",
+  "name": "Loan EMI Calculator",
+  "keyword": "loan emi calculator",
+  "description": "Work out your monthly loan payment, total interest and year-by-year balance, and see how an extra monthly payment shortens the loan.",
+  "facts": [
+    "Calculates the monthly payment (EMI) from the loan amount, the yearly interest rate and the term in years or months",
+    "Shows total interest, total payment, the number of payments needed and a year by year table of principal, interest and balance",
+    "Lets you add an extra monthly payment and shows the interest saved and the months saved",
+    "Uses the standard reducing balance formula with monthly compounding; a rate of 0 splits the loan evenly",
+    "Accepts terms from 1 month up to 50 years and rates from 0 to 100 percent",
+    "Can show numbers in the international style or the lakh and crore style used in South Asia",
+    "Works with any currency because it only does the arithmetic and does not convert money",
+    "Runs entirely in the browser; the figures you enter are never uploaded or stored"
+  ],
+  "limits": [
+    "Results are estimates; a lender may add fees, insurance or a different rounding rule",
+    "Rates that change over time, such as floating rates, are not modeled",
+    "Payment dates are not modeled, so the schedule assumes equal monthly periods"
+  ],
+  "use_cases": [
+    "comparing two loan offers",
+    "planning a car or home loan",
+    "checking the effect of paying extra each month",
+    "preparing questions for a lender"
+  ]
+}

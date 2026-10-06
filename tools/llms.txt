@@ -1,0 +1,6 @@
+# Musfira AI free tools free tools
+
+- [Word Counter](https://musman550.github.io/musfiraai-free-tools/tools/word-counter/): Count words, characters, sentences and reading time as you type, with live limits for posts, messages and search snippets.
+- [Password Generator](https://musman550.github.io/musfiraai-free-tools/tools/password-generator/): Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate.
+- [Loan EMI Calculator](https://musman550.github.io/musfiraai-free-tools/tools/loan-emi-calculator/): Work out your monthly loan payment, total interest and year-by-year balance, and see how an extra monthly payment shortens the loan.
+- [JSON Formatter](https://musman550.github.io/musfiraai-free-tools/tools/json-formatter/): Format, minify and validate JSON in your browser, with exact large numbers, sorted keys and the line and column of the first error.

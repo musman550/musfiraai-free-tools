@@ -1,0 +1,88 @@
+<!-- Word Counter | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap" data-mf-tool="word-counter">
+<div class="mf-in">
+<label for="wc-text">Your text</label>
+<textarea id="wc-text" rows="9" autocomplete="off" spellcheck="true" placeholder="Paste or type your text here"></textarea>
+<div class="mf-bar">
+<button type="button" id="wc-sample">Try sample text</button>
+<button type="button" id="wc-copy" class="mf-ghost">Copy summary</button>
+<button type="button" id="wc-clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="wc-status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<dl class="mf-stats">
+<div><dt>Words</dt><dd id="wc-words">0</dd></div>
+<div><dt>Characters</dt><dd id="wc-chars">0</dd></div>
+<div><dt>No spaces</dt><dd id="wc-nospace">0</dd></div>
+<div><dt>Sentences</dt><dd id="wc-sent">0</dd></div>
+<div><dt>Paragraphs</dt><dd id="wc-para">0</dd></div>
+<div><dt>Reading time</dt><dd id="wc-read">0 sec</dd></div>
+<div><dt>Speaking time</dt><dd id="wc-speak">0 sec</dd></div>
+</dl>
+<p class="mf-label">Fits within</p>
+<div id="wc-limits"></div>
+<p class="mf-label">Most used words</p>
+<ol id="wc-top"></ol>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  var ta = $("wc-text"), status = $("wc-status");
+  var LIMITS = [["Short social post", 280], ["Search result description", 160], ["Text message", 160], ["Photo caption", 2200]];
+  var STOP = "a an and are as at be but by for from had has have he her his i in is it its me my not of on or our she that the their them they this to was we were what when which who will with you your".split(" ");
+  var box = $("wc-limits");
+  LIMITS.forEach(function (l, i) {
+    var row = document.createElement("div");
+    row.innerHTML = '<span id="wc-lt' + i + '"></span><meter id="wc-lm' + i + '" min="0" max="' + l[1] + '" value="0"></meter>';
+    box.appendChild(row);
+  });
+  function words(t) {
+    if (window.Intl && Intl.Segmenter) {
+      var n = 0, seg = new Intl.Segmenter(undefined, { granularity: "word" });
+      for (var s of seg.segment(t)) if (s.isWordLike) n++;
+      return n;
+    }
+    var m = t.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu);
+    return m ? m.length : 0;
+  }
+  function fmt(sec) { return sec < 60 ? Math.round(sec) + " sec" : Math.floor(sec / 60) + " min " + Math.round(sec % 60) + " sec"; }
+  function update() {
+    var t = ta.value, w = words(t), chars = Array.from(t).length;
+    $("wc-words").textContent = w;
+    $("wc-chars").textContent = chars;
+    $("wc-nospace").textContent = Array.from(t.replace(/\s/g, "")).length;
+    $("wc-sent").textContent = (t.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || []).filter(function (x) { return /\S/.test(x); }).length;
+    $("wc-para").textContent = t.split(/\n\s*\n/).filter(function (p) { return /\S/.test(p); }).length;
+    $("wc-read").textContent = fmt(w / 238 * 60);
+    $("wc-speak").textContent = fmt(w / 150 * 60);
+    LIMITS.forEach(function (l, i) {
+      var over = chars > l[1], lt = $("wc-lt" + i);
+      lt.textContent = l[0] + ": " + chars + " / " + l[1] + (over ? " (over by " + (chars - l[1]) + ")" : "");
+      lt.className = over ? "mf-over" : "";
+      $("wc-lm" + i).value = Math.min(chars, l[1]);
+    });
+    var freq = {};
+    (t.toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || []).forEach(function (x) {
+      if (x.length > 2 && STOP.indexOf(x) < 0) freq[x] = (freq[x] || 0) + 1;
+    });
+    var top = Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || (a < b ? -1 : 1); }).slice(0, 8);
+    $("wc-top").innerHTML = "";
+    top.forEach(function (k) { var li = document.createElement("li"); li.textContent = k + " (" + freq[k] + ")"; $("wc-top").appendChild(li); });
+  }
+  ta.addEventListener("input", update);
+  $("wc-clear").addEventListener("click", function () { ta.value = ""; update(); status.textContent = "Cleared."; ta.focus(); });
+  $("wc-sample").addEventListener("click", function () {
+    ta.value = "Good tools stay out of the way. Paste a draft, see the numbers, and keep writing.\n\nA short note can still run long once you add a few more sentences, so check the limits before you post it anywhere.";
+    update(); status.textContent = "Sample loaded.";
+  });
+  $("wc-copy").addEventListener("click", function () {
+    var txt = "Words: " + $("wc-words").textContent + ", characters: " + $("wc-chars").textContent + ", sentences: " + $("wc-sent").textContent + ", reading time: " + $("wc-read").textContent;
+    var ok = function () { status.textContent = "Summary copied."; };
+    var fail = function () { status.textContent = "Copy is blocked in this browser. Select the numbers and copy them."; };
+    try { navigator.clipboard.writeText(txt).then(ok, fail); } catch (e) { fail(); }
+  });
+  update();
+})();
+</script>

@@ -1,0 +1,27 @@
+{
+  "slug": "password-generator",
+  "name": "Password Generator",
+  "keyword": "password generator",
+  "description": "Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate.",
+  "facts": [
+    "Generates passwords from 8 to 64 characters using the browser's secure random number generator",
+    "Starts at a default length of 16 characters",
+    "Lets you switch lowercase, uppercase, numbers and symbols on or off, and skip look-alike characters",
+    "Guarantees at least one character from every selected group, then shuffles the result",
+    "Uses unbiased selection, so no character is more likely than another",
+    "Shows an entropy estimate in bits and a plain strength label",
+    "Can make five passwords at once and copy the current one with a button",
+    "Runs entirely in the browser; passwords are never sent anywhere or stored"
+  ],
+  "limits": [
+    "The entropy figure is an estimate for a random password and does not apply to passwords you choose yourself",
+    "Some websites reject certain symbols, so you may need to turn symbols off",
+    "Clipboard copy can be blocked by browser settings"
+  ],
+  "use_cases": [
+    "creating a new account password",
+    "replacing a reused password",
+    "making a shared wifi key",
+    "generating test data"
+  ]
+}

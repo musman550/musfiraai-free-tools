@@ -1,0 +1,27 @@
+{
+  "slug": "json-formatter",
+  "name": "JSON Formatter",
+  "keyword": "json formatter",
+  "description": "Format, minify and validate JSON in your browser, with exact large numbers, sorted keys and the line and column of the first error.",
+  "facts": [
+    "Formats JSON with 2 spaces, 4 spaces or a tab, and can minify it or only validate it",
+    "Reports the line and column of the first error and moves the cursor to that spot",
+    "Keeps numbers exactly as written, for example 12345678901234567890, because numbers are read as text and never rounded",
+    "Follows the JSON standard strictly: trailing commas, comments, single quotes and NaN are reported as errors",
+    "Can sort object keys from A to Z and warns when an object repeats a key",
+    "Shows the size before and after, the number of keys and the nesting depth",
+    "Refuses nesting deeper than 512 levels",
+    "Runs entirely in the browser; the text is never uploaded or stored"
+  ],
+  "limits": [
+    "Very large documents can be slow on older phones because all work happens on your device",
+    "Only the first error is reported, so fix it and run the check again",
+    "Sorted keys use plain A to Z order of the key text"
+  ],
+  "use_cases": [
+    "reading an API response",
+    "fixing a broken config file",
+    "shrinking JSON before pasting it into a URL",
+    "comparing two versions of a file"
+  ]
+}

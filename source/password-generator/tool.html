@@ -1,0 +1,80 @@
+<!-- Password Generator | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap" data-mf-tool="password-generator">
+<div class="mf-in">
+<label for="pw-length">Length: <span id="pw-len-label">16</span></label>
+<input id="pw-length" type="range" min="8" max="64" value="16" aria-describedby="pw-len-label">
+<fieldset style="border:0;padding:0;margin:.8rem 0 0">
+<legend class="mf-label">Characters to use</legend>
+<label style="font-weight:400"><input type="checkbox" id="pw-lower" checked> Lowercase letters</label>
+<label style="font-weight:400"><input type="checkbox" id="pw-upper" checked> Uppercase letters</label>
+<label style="font-weight:400"><input type="checkbox" id="pw-digit" checked> Numbers</label>
+<label style="font-weight:400"><input type="checkbox" id="pw-sym" checked> Symbols</label>
+<label style="font-weight:400"><input type="checkbox" id="pw-amb"> Skip look-alike characters (I, l, 1, O, 0, o)</label>
+</fieldset>
+<div class="mf-bar"><button type="button" id="pw-gen">Generate new password</button><button type="button" id="pw-bulk" class="mf-ghost">Make 5 at once</button></div>
+</div>
+<div class="mf-out" aria-live="polite">
+<label for="pw-out">Your password</label>
+<output id="pw-out" class="mf-box" style="display:block;word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.15rem"></output>
+<dl class="mf-stats" style="margin-top:.8rem">
+<div><dt>Strength</dt><dd id="pw-strength">-</dd></div>
+<div><dt>Entropy</dt><dd id="pw-bits">-</dd></div>
+</dl>
+<div class="mf-bar"><button type="button" id="pw-copy" class="mf-ghost">Copy password</button></div>
+<p class="mf-status" id="pw-status" role="status"></p>
+<ul id="pw-list" style="padding-left:1.1rem;word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace"></ul>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  var SETS = { lower: "abcdefghijklmnopqrstuvwxyz", upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ", digit: "0123456789", sym: "!@#$%^&*()-_=+[]{};:,.?/" };
+  var AMB = /[Il1O0o]/g;
+  function rnd(n) {
+    var a = new Uint32Array(1), max = Math.floor(4294967296 / n) * n, x;
+    do { crypto.getRandomValues(a); x = a[0]; } while (x >= max);
+    return x % n;
+  }
+  function pools() {
+    var skip = $("pw-amb").checked, out = [];
+    [["lower", "pw-lower"], ["upper", "pw-upper"], ["digit", "pw-digit"], ["sym", "pw-sym"]].forEach(function (p) {
+      if ($(p[1]).checked) { var s = skip ? SETS[p[0]].replace(AMB, "") : SETS[p[0]]; if (s) out.push(s); }
+    });
+    return out;
+  }
+  function make(len) {
+    var ps = pools();
+    if (!ps.length) return null;
+    var all = ps.join(""), chars = ps.map(function (s) { return s[rnd(s.length)]; });
+    while (chars.length < len) chars.push(all[rnd(all.length)]);
+    for (var i = chars.length - 1; i > 0; i--) { var j = rnd(i + 1), t = chars[i]; chars[i] = chars[j]; chars[j] = t; }
+    return chars.slice(0, len).join("");
+  }
+  function show(pw) {
+    var out = $("pw-out");
+    if (!pw) { out.textContent = ""; $("pw-strength").textContent = "-"; $("pw-bits").textContent = "-"; $("pw-status").textContent = "Choose at least one kind of character."; return; }
+    out.textContent = pw;
+    var bits = Math.floor(pw.length * Math.log2(pools().join("").length));
+    $("pw-bits").textContent = bits + " bits";
+    $("pw-strength").textContent = bits < 40 ? "Weak" : bits < 60 ? "Fair" : bits < 80 ? "Strong" : "Very strong";
+    $("pw-status").textContent = "";
+  }
+  function gen() { show(make(+$("pw-length").value)); $("pw-list").innerHTML = ""; }
+  $("pw-length").addEventListener("input", function () { $("pw-len-label").textContent = this.value; gen(); });
+  ["pw-lower", "pw-upper", "pw-digit", "pw-sym", "pw-amb"].forEach(function (id) { $(id).addEventListener("change", gen); });
+  $("pw-gen").addEventListener("click", gen);
+  $("pw-bulk").addEventListener("click", function () {
+    var l = $("pw-list"); l.innerHTML = "";
+    for (var i = 0; i < 5; i++) { var p = make(+$("pw-length").value); if (!p) break; var li = document.createElement("li"); li.textContent = p; l.appendChild(li); }
+    if (l.children.length) show(l.children[0].textContent);
+  });
+  $("pw-copy").addEventListener("click", function () {
+    var pw = $("pw-out").textContent, st = $("pw-status");
+    if (!pw) { st.textContent = "Generate a password first."; return; }
+    var ok = function () { st.textContent = "Password copied."; };
+    var fail = function () { st.textContent = "Copy is blocked in this browser. Select the password and copy it."; };
+    try { navigator.clipboard.writeText(pw).then(ok, fail); } catch (e) { fail(); }
+  });
+  gen();
+})();
+</script>

@@ -1,0 +1,26 @@
+{
+  "slug": "word-counter",
+  "name": "Word Counter",
+  "keyword": "word counter",
+  "description": "Count words, characters, sentences and reading time as you type, with live limits for posts, messages and search snippets.",
+  "facts": [
+    "Counts words, characters with and without spaces, sentences and paragraphs live as you type",
+    "Estimates reading time at 238 words per minute and speaking time at 150 words per minute",
+    "Shows how close the text is to common limits: 280 characters for a short social post, 160 for a search result description, 160 for a text message, 2200 for a photo caption",
+    "Lists the eight most used words, ignoring common filler words",
+    "Works on pasted text of any language that uses spaces or that the browser can segment into words",
+    "Runs entirely in the browser; the text is never uploaded or stored",
+    "Has buttons for sample text, copying a one-line summary and clearing everything"
+  ],
+  "limits": [
+    "Word segmentation for languages without spaces depends on the browser's built-in segmenter",
+    "The limit meters count characters, not bytes, and platforms may count emoji or links differently",
+    "Reading and speaking times are averages, not predictions for one person"
+  ],
+  "use_cases": [
+    "checking an essay against a word limit",
+    "trimming a search result description",
+    "preparing a short post",
+    "timing a speech"
+  ]
+}

@@ -1,0 +1,191 @@
+<!-- JSON Formatter | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap" data-mf-tool="json-formatter">
+<div class="mf-in">
+<label for="jf-in">Paste your JSON</label>
+<textarea id="jf-in" rows="12" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder='{"name": "example", "items": [1, 2, 3]}' style="font-family:ui-monospace,Menlo,Consolas,monospace"></textarea>
+<div class="mf-bar">
+<label style="font-weight:400">Indent <select id="jf-indent"><option value="2">2 spaces</option><option value="4">4 spaces</option><option value="t">Tab</option></select></label>
+<label style="font-weight:400"><input type="checkbox" id="jf-sort"> Sort keys A to Z</label>
+</div>
+<div class="mf-bar">
+<button type="button" id="jf-format">Format</button>
+<button type="button" id="jf-minify">Minify</button>
+<button type="button" id="jf-validate" class="mf-ghost">Validate</button>
+<button type="button" id="jf-sample" class="mf-ghost">Sample</button>
+<button type="button" id="jf-clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="jf-status" role="status"></p>
+</div>
+<div class="mf-out">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="jf-out" tabindex="0"></pre>
+<div class="mf-bar"><button type="button" id="jf-copy" class="mf-ghost">Copy result</button><button type="button" id="jf-use" class="mf-ghost">Use result as input</button></div>
+<dl class="mf-stats" style="margin-top:.8rem">
+<div><dt>Size in</dt><dd id="jf-sin">-</dd></div>
+<div><dt>Size out</dt><dd id="jf-sout">-</dd></div>
+<div><dt>Keys</dt><dd id="jf-keys">-</dd></div>
+<div><dt>Depth</dt><dd id="jf-depth">-</dd></div>
+</dl>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  var inp = $("jf-in"), out = $("jf-out"), st = $("jf-status"), timer = null;
+  var MAXDEPTH = 512;
+
+  function parse(text) {
+    var i = 0, n = text.length, keys = 0, depth = 0, dups = [];
+    function fail(msg, pos) { var e = new Error(msg); e.pos = pos === undefined ? i : pos; throw e; }
+    function ws() { while (i < n) { var c = text.charCodeAt(i); if (c === 32 || c === 9 || c === 10 || c === 13) i++; else break; } }
+    function str() {
+      var start = i; i++;
+      while (true) {
+        if (i >= n) fail("The string is not closed", start);
+        var c = text.charCodeAt(i);
+        if (c === 34) { i++; return text.slice(start, i); }
+        if (c < 32) fail("A line break or control character inside a string must be written as an escape such as \\n");
+        if (c === 92) {
+          var e = text[i + 1];
+          if (e === "u") {
+            if (!/^[0-9a-fA-F]{4}$/.test(text.slice(i + 2, i + 6))) fail("A \\u escape needs four hex digits", i);
+            i += 6;
+          } else if (e !== undefined && "\"\\/bfnrt".indexOf(e) >= 0) { i += 2; }
+          else fail("This escape sequence is not valid in JSON", i);
+        } else i++;
+      }
+    }
+    function num() {
+      var re = /-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/y;
+      re.lastIndex = i;
+      var m = re.exec(text);
+      if (!m || !m[0]) fail("This is not a valid number");
+      i += m[0].length;
+      return { t: "n", raw: m[0] };
+    }
+    function word(w, t) { if (text.substr(i, w.length) === w) { i += w.length; return { t: t, raw: w }; } return null; }
+    function value(d) {
+      ws();
+      if (i >= n) fail("The JSON ends too early, a value is missing");
+      if (d > MAXDEPTH) fail("Nesting is deeper than " + MAXDEPTH + " levels");
+      if (d > depth) depth = d;
+      var c = text[i], r;
+      if (c === "{") return obj(d);
+      if (c === "[") return arr(d);
+      if (c === '"') return { t: "s", raw: str() };
+      if (c === "-" || (c >= "0" && c <= "9")) return num();
+      if ((r = word("true", "b")) || (r = word("false", "b")) || (r = word("null", "z"))) return r;
+      if (c === "'") fail("Single quotes are not allowed, use double quotes");
+      if (c === "/") fail("Comments are not allowed in JSON");
+      if (/^(undefined|NaN|Infinity)/.test(text.slice(i, i + 9))) fail("This value is not valid JSON");
+      fail("Unexpected character '" + c + "'");
+    }
+    function obj(d) {
+      var start = i, m = [], seen = {}; i++; ws();
+      if (text[i] === "}") { i++; return { t: "o", m: m }; }
+      while (true) {
+        ws();
+        if (text[i] !== '"') fail(i >= n ? "The object is not closed" : "Expected a property name in double quotes");
+        var k = str(); ws();
+        if (text[i] !== ":") fail("Expected ':' after the property name");
+        i++;
+        var v = value(d + 1);
+        keys++;
+        if (seen[k]) dups.push(k); seen[k] = true;
+        m.push({ k: k, v: v }); ws();
+        if (text[i] === ",") {
+          var comma = i; i++; ws();
+          if (text[i] === "}") fail("A trailing comma is not allowed", comma);
+          continue;
+        }
+        if (text[i] === "}") { i++; return { t: "o", m: m }; }
+        fail(i >= n ? "The object is not closed" : "Expected ',' or '}'");
+      }
+    }
+    function arr(d) {
+      var a = []; i++; ws();
+      if (text[i] === "]") { i++; return { t: "a", a: a }; }
+      while (true) {
+        a.push(value(d + 1)); ws();
+        if (text[i] === ",") {
+          var comma = i; i++; ws();
+          if (text[i] === "]") fail("A trailing comma is not allowed", comma);
+          continue;
+        }
+        if (text[i] === "]") { i++; return { t: "a", a: a }; }
+        fail(i >= n ? "The array is not closed" : "Expected ',' or ']'");
+      }
+    }
+    var v = value(1); ws();
+    if (i < n) fail("Unexpected character '" + text[i] + "' after the end of the JSON");
+    return { v: v, keys: keys, depth: depth, dups: dups };
+  }
+
+  function ser(v, ind, lvl, sort) {
+    if (v.t === "o") {
+      if (!v.m.length) return "{}";
+      var m = v.m.slice();
+      if (sort) m.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
+      var pad = ind ? "\n" + new Array(lvl + 2).join(ind) : "", end = ind ? "\n" + new Array(lvl + 1).join(ind) : "";
+      return "{" + pad + m.map(function (e) { return e.k + (ind ? ": " : ":") + ser(e.v, ind, lvl + 1, sort); }).join("," + pad) + end + "}";
+    }
+    if (v.t === "a") {
+      if (!v.a.length) return "[]";
+      var pad2 = ind ? "\n" + new Array(lvl + 2).join(ind) : "", end2 = ind ? "\n" + new Array(lvl + 1).join(ind) : "";
+      return "[" + pad2 + v.a.map(function (e) { return ser(e, ind, lvl + 1, sort); }).join("," + pad2) + end2 + "]";
+    }
+    return v.raw;
+  }
+
+  function lineCol(text, pos) {
+    var line = 1, last = -1;
+    for (var k = 0; k < pos && k < text.length; k++) if (text[k] === "\n") { line++; last = k; }
+    return { line: line, col: pos - last };
+  }
+  function bytes(s) { return new TextEncoder().encode(s).length; }
+  function size(b) { return b < 1024 ? b + " B" : (b / 1024).toFixed(1) + " KB"; }
+  function say(msg, bad) { st.textContent = msg; st.className = "mf-status" + (bad ? " mf-over" : ""); }
+  function stats(r, a, b) {
+    $("jf-sin").textContent = r ? size(bytes(a)) : "-";
+    $("jf-sout").textContent = r && b !== null ? size(bytes(b)) : "-";
+    $("jf-keys").textContent = r ? r.keys : "-";
+    $("jf-depth").textContent = r ? r.depth : "-";
+  }
+  function indentValue() { var v = $("jf-indent").value; return v === "t" ? "\t" : new Array(+v + 1).join(" "); }
+
+  function run(mode, select) {
+    var text = inp.value;
+    if (!/\S/.test(text)) { out.textContent = ""; stats(null); say("Paste some JSON first.", true); return; }
+    try {
+      var r = parse(text), s = ser(r.v, mode === "min" ? "" : indentValue(), 0, $("jf-sort").checked);
+      if (mode !== "check") out.textContent = s;
+      stats(r, text, mode === "check" ? null : s);
+      say("Valid JSON." + (r.dups.length ? " Warning: the key " + r.dups[0] + " is repeated in an object." : ""), false);
+    } catch (e) {
+      if (e && e.pos === undefined) throw e;
+      var p = lineCol(text, e.pos);
+      out.textContent = ""; stats(null);
+      say("Invalid JSON: " + e.message + " (line " + p.line + ", column " + p.col + ").", true);
+      if (select) { inp.focus(); inp.setSelectionRange(e.pos, Math.min(text.length, e.pos + 1)); }
+    }
+  }
+  $("jf-format").addEventListener("click", function () { run("pretty", true); });
+  $("jf-minify").addEventListener("click", function () { run("min", true); });
+  $("jf-validate").addEventListener("click", function () { run("check", true); });
+  $("jf-indent").addEventListener("change", function () { if (out.textContent) run("pretty", false); });
+  $("jf-sort").addEventListener("change", function () { if (out.textContent) run(out.textContent.indexOf("\n") < 0 ? "min" : "pretty", false); });
+  inp.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { if (/\S/.test(inp.value)) run("check", false); else say("", false); }, 300); });
+  $("jf-sample").addEventListener("click", function () {
+    inp.value = '{"name":"musfiraai","free":true,"tools":[{"id":1,"title":"Word Counter","tags":["text","count"]},{"id":2,"title":"Password Generator","tags":["security"]}],"big":12345678901234567890,"note":null}';
+    run("pretty", false);
+  });
+  $("jf-clear").addEventListener("click", function () { inp.value = ""; out.textContent = ""; stats(null); say("Cleared.", false); inp.focus(); });
+  $("jf-use").addEventListener("click", function () { if (out.textContent) { inp.value = out.textContent; run("pretty", false); } });
+  $("jf-copy").addEventListener("click", function () {
+    var t = out.textContent; if (!t) { say("Format something first.", true); return; }
+    var ok = function () { say("Result copied.", false); };
+    var no = function () { say("Copy is blocked in this browser. Select the result and copy it.", true); };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+})();
+</script>

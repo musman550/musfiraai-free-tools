@@ -1,0 +1,110 @@
+<!-- Loan EMI Calculator | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap" data-mf-tool="loan-emi-calculator">
+<div class="mf-in">
+<div class="mf-row">
+<div><label for="lc-amount">Loan amount</label><input id="lc-amount" type="number" inputmode="decimal" min="0" step="any" value="1000000"></div>
+<div><label for="lc-rate">Yearly interest rate (%)</label><input id="lc-rate" type="number" inputmode="decimal" min="0" max="100" step="any" value="12"></div>
+</div>
+<div class="mf-row" style="margin-top:.8rem">
+<div><label for="lc-term">Loan term</label><input id="lc-term" type="number" inputmode="numeric" min="1" step="1" value="5"></div>
+<div><label for="lc-unit">Term in</label><select id="lc-unit"><option value="y">Years</option><option value="m">Months</option></select></div>
+<div><label for="lc-extra">Extra payment each month</label><input id="lc-extra" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+</div>
+<div class="mf-row" style="margin-top:.8rem">
+<div><label for="lc-fmt">Number style</label><select id="lc-fmt"><option value="en-US">1,234,567.89 (international)</option><option value="en-IN">12,34,567.89 (lakh and crore)</option></select></div>
+</div>
+<p class="mf-status" id="lc-status" role="status"></p>
+<p style="font-size:.88rem;opacity:.8;margin:.2rem 0 0">Estimates only. Your lender's figures can differ because of fees, rounding rules and payment dates.</p>
+</div>
+<div class="mf-out" aria-live="polite">
+<dl class="mf-stats">
+<div><dt>Monthly payment (EMI)</dt><dd id="lc-emi">-</dd></div>
+<div><dt>Total interest</dt><dd id="lc-int">-</dd></div>
+<div><dt>Total payment</dt><dd id="lc-total">-</dd></div>
+<div><dt>Payments needed</dt><dd id="lc-months">-</dd></div>
+<div><dt>Interest saved</dt><dd id="lc-saved">-</dd></div>
+<div><dt>Months saved</dt><dd id="lc-msaved">-</dd></div>
+</dl>
+<p class="mf-label">Principal and interest over time</p>
+<meter id="lc-share" min="0" max="100" value="0"></meter>
+<p class="mf-status" id="lc-share-text"></p>
+<p class="mf-label">Year by year</p>
+<div class="mf-scroll"><table class="mf-table" id="lc-table"><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance left</th></tr></thead><tbody></tbody></table></div>
+<div class="mf-bar"><button type="button" id="lc-copy" class="mf-ghost">Copy summary</button><button type="button" id="lc-reset" class="mf-ghost">Reset</button></div>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  var DEF = { amount: "1000000", rate: "12", term: "5", unit: "y", extra: "0", fmt: "en-US" };
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+  function emi(p, annual, n) {
+    var r = annual / 1200;
+    if (r === 0) return p / n;
+    var f = Math.pow(1 + r, n);
+    return p * r * f / (f - 1);
+  }
+  function schedule(p, annual, n, extra) {
+    var r = annual / 1200, pay = emi(p, annual, n), bal = p, rows = [], tot = 0, m = 0;
+    while (bal > 0.005 && m < 1200) {
+      var i = bal * r, prin = pay - i + extra;
+      if (prin > bal) prin = bal;
+      bal -= prin; tot += i; m++;
+      rows.push({ m: m, i: i, p: prin, b: bal < 0.005 ? 0 : bal });
+    }
+    return { rows: rows, interest: tot, months: m, emi: pay };
+  }
+  function fmt(x) { return new Intl.NumberFormat($("lc-fmt").value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(x); }
+  function say(msg, bad) { var s = $("lc-status"); s.textContent = msg; s.className = "mf-status" + (bad ? " mf-over" : ""); }
+  function clear() {
+    ["lc-emi", "lc-int", "lc-total", "lc-months", "lc-saved", "lc-msaved"].forEach(function (id) { $(id).textContent = "-"; });
+    $("lc-table").querySelector("tbody").innerHTML = ""; $("lc-share").value = 0; $("lc-share-text").textContent = "";
+  }
+  function calc() {
+    var p = num("lc-amount"), rate = num("lc-rate"), t = num("lc-term"), extra = num("lc-extra");
+    if (isNaN(extra)) extra = 0;
+    var n = Math.round($("lc-unit").value === "y" ? t * 12 : t);
+    if (!(p > 0)) { clear(); say("Enter a loan amount above zero.", true); return; }
+    if (isNaN(rate) || rate < 0 || rate > 100) { clear(); say("Enter a yearly rate between 0 and 100.", true); return; }
+    if (!(n >= 1) || n > 600) { clear(); say("Enter a term between 1 month and 50 years.", true); return; }
+    if (extra < 0) { clear(); say("Extra payment cannot be negative.", true); return; }
+    say("", false);
+    var base = schedule(p, rate, n, 0), plan = extra > 0 ? schedule(p, rate, n, extra) : base;
+    var total = p + plan.interest;
+    $("lc-emi").textContent = fmt(base.emi);
+    $("lc-int").textContent = fmt(plan.interest);
+    $("lc-total").textContent = fmt(total);
+    $("lc-months").textContent = plan.months;
+    $("lc-saved").textContent = extra > 0 ? fmt(base.interest - plan.interest) : "-";
+    $("lc-msaved").textContent = extra > 0 ? (base.months - plan.months) : "-";
+    var share = total > 0 ? Math.round(p / total * 100) : 100;
+    $("lc-share").value = share;
+    $("lc-share-text").textContent = share + "% of everything you pay is the loan itself, " + (100 - share) + "% is interest.";
+    var tb = $("lc-table").querySelector("tbody"); tb.innerHTML = "";
+    var years = {};
+    plan.rows.forEach(function (r) {
+      var y = Math.ceil(r.m / 12), o = years[y] || (years[y] = { p: 0, i: 0, b: 0 });
+      o.p += r.p; o.i += r.i; o.b = r.b;
+    });
+    Object.keys(years).forEach(function (y) {
+      var tr = document.createElement("tr"), o = years[y];
+      [y, fmt(o.p), fmt(o.i), fmt(o.b)].forEach(function (v) { var td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  }
+  ["lc-amount", "lc-rate", "lc-term", "lc-unit", "lc-extra", "lc-fmt"].forEach(function (id) {
+    $(id).addEventListener("input", calc); $(id).addEventListener("change", calc);
+  });
+  $("lc-reset").addEventListener("click", function () {
+    $("lc-amount").value = DEF.amount; $("lc-rate").value = DEF.rate; $("lc-term").value = DEF.term;
+    $("lc-unit").value = DEF.unit; $("lc-extra").value = DEF.extra; $("lc-fmt").value = DEF.fmt; calc();
+  });
+  $("lc-copy").addEventListener("click", function () {
+    var t = "EMI " + $("lc-emi").textContent + ", total interest " + $("lc-int").textContent + ", total payment " + $("lc-total").textContent + ", payments " + $("lc-months").textContent;
+    var ok = function () { say("Summary copied.", false); };
+    var no = function () { say("Copy is blocked in this browser. Select the numbers and copy them.", true); };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  calc();
+})();
+</script>
