@@ -11,6 +11,9 @@ Live pages: https://musman550.github.io/musfiraai-free-tools/tools/
 | [Loan EMI Calculator](https://musman550.github.io/musfiraai-free-tools/tools/loan-emi-calculator/) | Work out your monthly loan payment, total interest and year-by-year balance, and see how an extra monthly payment shortens the loan. |
 | [Password Generator](https://musman550.github.io/musfiraai-free-tools/tools/password-generator/) | Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate. |
 
+## Connect
+[Website](https://musfiraai.com) | [LinkedIn](https://www.linkedin.com/in/musfira-ai-b3218b39b) | [Instagram](https://instagram.com/musma_n55) | [WhatsApp](https://wa.me/923217358096) | Call +923217358096 | YouTube: Automate With Musfira AI
+
 ## Use them
 * Open a tool page, or open `index.html` from the repository folder in any modern browser.
 * Readable source for each tool: `source/<tool>/tool.html`.
