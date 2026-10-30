@@ -6,13 +6,14 @@ Live site: https://musman550.github.io/musfiraai-free-tools/tools/
 
 New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/feed.xml
 
-## Tools (4)
+## Tools (5)
 
 | Tool | What it does |
 |---|---|
 | [JSON Formatter](https://musman550.github.io/musfiraai-free-tools/tools/json-formatter/) | Format, minify and validate JSON in your browser, with exact large numbers, sorted keys and the line and column of the first error. |
 | [Loan EMI Calculator](https://musman550.github.io/musfiraai-free-tools/tools/loan-emi-calculator/) | Work out your monthly loan payment, total interest and year-by-year balance, and see how an extra monthly payment shortens the loan. |
 | [Password Generator](https://musman550.github.io/musfiraai-free-tools/tools/password-generator/) | Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate. |
+| [Text Case Converter](https://musman550.github.io/musfiraai-free-tools/tools/text-case-converter/) | Change text to upper, lower, title or sentence case, or to camelCase, snake_case, kebab-case and more, in your browser. |
 | [Word Counter](https://musman550.github.io/musfiraai-free-tools/tools/word-counter/) | Count words, characters, sentences and reading time as you type, with live limits for posts, messages and search snippets. |
 
 ## Connect
