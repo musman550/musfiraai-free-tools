@@ -1,0 +1,64 @@
+<!-- Base64 Encoder and Decoder | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label for="opt-mode">Mode</label><select id="opt-mode"><option value="encode" selected>Encode</option><option value="decode">Decode</option></select>
+<label style="font-weight:400"><input type="checkbox" id="opt-urlsafe"> URL-safe (encode only)</label>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    if (text === "") return "";
+    if (o.mode === "encode") {
+      var enc = new TextEncoder().encode(text), bin = "";
+      for (var i = 0; i < enc.length; i++) bin += String.fromCharCode(enc[i]);
+      var b = btoa(bin);
+      return o.urlsafe ? b.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "") : b;
+    }
+    var t = text.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+    if (!/^[A-Za-z0-9+\/]*={0,2}$/.test(t)) return "Invalid Base64";
+    t = t.replace(/=+$/, "");
+    if (t.length % 4 === 1) return "Invalid Base64";
+    while (t.length % 4) t += "=";
+    try {
+      var raw = atob(t), arr = new Uint8Array(raw.length);
+      for (var j = 0; j < raw.length; j++) arr[j] = raw.charCodeAt(j);
+      return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(arr);
+    } catch (e) { return "Invalid Base64"; }
+  }
+  function options() { return { mode: $("opt-mode").value, urlsafe: $("opt-urlsafe").checked }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-mode").addEventListener("change", update);
+  $("opt-urlsafe").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "Hello, caf\u00e9!"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>
