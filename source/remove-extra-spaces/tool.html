@@ -1,0 +1,58 @@
+<!-- Remove Extra Spaces | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label style="font-weight:400"><input type="checkbox" id="opt-collapse" checked> Collapse repeated spaces</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-trim_lines" checked> Trim the ends of lines</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-remove_blank_lines"> Remove blank lines</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-tabs_to_spaces"> Turn tabs into spaces</label>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    var t = text.replace(/\r\n/g, "\n");
+    if (o.tabs_to_spaces) t = t.replace(/\t/g, " ");
+    var lines = t.split("\n");
+    if (o.collapse) lines = lines.map(function (l) { return l.replace(/ {2,}/g, " "); });
+    if (o.trim_lines) lines = lines.map(function (l) { return l.replace(/^[ \t]+|[ \t]+$/g, ""); });
+    if (o.remove_blank_lines) lines = lines.filter(function (l) { return l.replace(/^[ \t]+|[ \t]+$/g, "") !== ""; });
+    return lines.join("\n");
+  }
+  function options() { return { collapse: $("opt-collapse").checked, trim_lines: $("opt-trim_lines").checked, remove_blank_lines: $("opt-remove_blank_lines").checked, tabs_to_spaces: $("opt-tabs_to_spaces").checked }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-collapse").addEventListener("change", update);
+  $("opt-trim_lines").addEventListener("change", update);
+  $("opt-remove_blank_lines").addEventListener("change", update);
+  $("opt-tabs_to_spaces").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "  too    many   spaces  \n\n   here  "; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>
