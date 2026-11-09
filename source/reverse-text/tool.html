@@ -1,0 +1,48 @@
+<!-- Reverse Text | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label for="opt-mode">Reverse by</label><select id="opt-mode"><option value="characters" selected>Characters</option><option value="words">Words</option><option value="lines">Lines</option></select>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    if (o.mode === "characters") return Array.from(text).reverse().join("");
+    if (o.mode === "words") return text.split(/\s+/).filter(Boolean).reverse().join(" ");
+    return text.split("\n").reverse().join("\n");
+  }
+  function options() { return { mode: $("opt-mode").value }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-mode").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "Hello World, caf\u00e9 123!"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>

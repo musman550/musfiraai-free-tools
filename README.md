@@ -6,7 +6,7 @@ Live site: https://musman550.github.io/musfiraai-free-tools/tools/
 
 New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/feed.xml
 
-## Tools (11)
+## Tools (12)
 
 | Tool | What it does |
 |---|---|
@@ -16,6 +16,7 @@ New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/fee
 | [Password Generator](https://musman550.github.io/musfiraai-free-tools/tools/password-generator/) | Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate. |
 | [Remove Extra Spaces](https://musman550.github.io/musfiraai-free-tools/tools/remove-extra-spaces/) | Remove double spaces, trim the ends of lines, delete blank lines and turn tabs into spaces, in your browser. |
 | [Remove Line Breaks](https://musman550.github.io/musfiraai-free-tools/tools/remove-line-breaks/) | Join text onto one line by removing line breaks, with options to keep paragraphs and to use a space, a comma or nothing. |
+| [Reverse Text](https://musman550.github.io/musfiraai-free-tools/tools/reverse-text/) | Reverse text by characters, by words or by lines in your browser, with correct handling of accents and symbols. |
 | [Slug Generator](https://musman550.github.io/musfiraai-free-tools/tools/slug-generator/) | Turn any title into a clean, lowercase URL slug with accents removed and your choice of hyphens or underscores. |
 | [Sort Lines](https://musman550.github.io/musfiraai-free-tools/tools/sort-lines/) | Sort a list of lines from A to Z or Z to A, ignore case, trim spaces, skip empty lines and remove repeats, all in your browser. |
 | [Text Case Converter](https://musman550.github.io/musfiraai-free-tools/tools/text-case-converter/) | Change text to upper, lower, title or sentence case, or to camelCase, snake_case, kebab-case and more, in your browser. |
