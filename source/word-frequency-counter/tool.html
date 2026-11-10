@@ -1,0 +1,53 @@
+<!-- Word Frequency Counter | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label for="opt-min_length">Minimum word length</label><input type="number" id="opt-min_length" min="1" max="6" value="1">
+<label style="font-weight:400"><input type="checkbox" id="opt-ignore_stop"> Ignore common filler words</label>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  var STOP = "a an and are as at be but by for from had has have he her his i in is it its me my not of on or our she that the their them they this to was we were what when which who will with you your".split(" ");
+  function convert(text, o) {
+    var ws = (text.toLowerCase().match(/[a-z0-9']+/g) || []).filter(function (w) { return w.length >= o.min_length && !(o.ignore_stop && STOP.indexOf(w) >= 0); });
+    var cnt = new Map();
+    ws.forEach(function (w) { cnt.set(w, (cnt.get(w) || 0) + 1); });
+    return Array.from(cnt.entries()).sort(function (a, b) { return (b[1] - a[1]) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0); })
+      .map(function (e) { return e[0] + ": " + e[1]; }).join("\n");
+  }
+  function options() { return { min_length: Number($("opt-min_length").value), ignore_stop: $("opt-ignore_stop").checked }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-min_length").addEventListener("input", update);
+  $("opt-ignore_stop").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "the cat and the dog and the bird"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>

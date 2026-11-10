@@ -6,7 +6,7 @@ Live site: https://musman550.github.io/musfiraai-free-tools/tools/
 
 New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/feed.xml
 
-## Tools (12)
+## Tools (13)
 
 | Tool | What it does |
 |---|---|
@@ -22,6 +22,7 @@ New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/fee
 | [Text Case Converter](https://musman550.github.io/musfiraai-free-tools/tools/text-case-converter/) | Change text to upper, lower, title or sentence case, or to camelCase, snake_case, kebab-case and more, in your browser. |
 | [URL Encoder and Decoder](https://musman550.github.io/musfiraai-free-tools/tools/url-encoder-and-decoder/) | Percent-encode or decode text and web addresses in your browser, for a single value or a whole address. |
 | [Word Counter](https://musman550.github.io/musfiraai-free-tools/tools/word-counter/) | Count words, characters, sentences and reading time as you type, with live limits for posts, messages and search snippets. |
+| [Word Frequency Counter](https://musman550.github.io/musfiraai-free-tools/tools/word-frequency-counter/) | Count how often each word appears in your text, ignore common filler words and set a minimum word length, in your browser. |
 
 ## Connect
 [Website](https://musfiraai.com) | [LinkedIn](https://www.linkedin.com/in/musfira-ai-b3218b39b) | [Instagram](https://instagram.com/musma_n55) | [WhatsApp](https://wa.me/923217358096) | Call +923217358096 | YouTube: Automate With Musfira AI
