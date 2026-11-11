@@ -6,7 +6,7 @@ Live site: https://musman550.github.io/musfiraai-free-tools/tools/
 
 New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/feed.xml
 
-## Tools (13)
+## Tools (14)
 
 | Tool | What it does |
 |---|---|
@@ -14,6 +14,7 @@ New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/fee
 | [JSON Formatter](https://musman550.github.io/musfiraai-free-tools/tools/json-formatter/) | Format, minify and validate JSON in your browser, with exact large numbers, sorted keys and the line and column of the first error. |
 | [Loan EMI Calculator](https://musman550.github.io/musfiraai-free-tools/tools/loan-emi-calculator/) | Work out your monthly loan payment, total interest and year-by-year balance, and see how an extra monthly payment shortens the loan. |
 | [Password Generator](https://musman550.github.io/musfiraai-free-tools/tools/password-generator/) | Create strong random passwords in your browser, with adjustable length, character sets and an honest strength estimate. |
+| [Remove Duplicate Lines](https://musman550.github.io/musfiraai-free-tools/tools/remove-duplicate-lines/) | Remove repeated lines from a list while keeping the first copy and the original order, with options for case, spaces and empty lines. |
 | [Remove Extra Spaces](https://musman550.github.io/musfiraai-free-tools/tools/remove-extra-spaces/) | Remove double spaces, trim the ends of lines, delete blank lines and turn tabs into spaces, in your browser. |
 | [Remove Line Breaks](https://musman550.github.io/musfiraai-free-tools/tools/remove-line-breaks/) | Join text onto one line by removing line breaks, with options to keep paragraphs and to use a space, a comma or nothing. |
 | [Reverse Text](https://musman550.github.io/musfiraai-free-tools/tools/reverse-text/) | Reverse text by characters, by words or by lines in your browser, with correct handling of accents and symbols. |

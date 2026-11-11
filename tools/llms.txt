@@ -1,5 +1,6 @@
 # Musfira AI free tools free tools
 
+- [Remove Duplicate Lines](https://musman550.github.io/musfiraai-free-tools/tools/remove-duplicate-lines/): Remove repeated lines from a list while keeping the first copy and the original order, with options for case, spaces and empty lines.
 - [Word Frequency Counter](https://musman550.github.io/musfiraai-free-tools/tools/word-frequency-counter/): Count how often each word appears in your text, ignore common filler words and set a minimum word length, in your browser.
 - [Reverse Text](https://musman550.github.io/musfiraai-free-tools/tools/reverse-text/): Reverse text by characters, by words or by lines in your browser, with correct handling of accents and symbols.
 - [Remove Extra Spaces](https://musman550.github.io/musfiraai-free-tools/tools/remove-extra-spaces/): Remove double spaces, trim the ends of lines, delete blank lines and turn tabs into spaces, in your browser.

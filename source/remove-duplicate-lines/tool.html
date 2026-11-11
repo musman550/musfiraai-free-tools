@@ -1,0 +1,56 @@
+<!-- Remove Duplicate Lines | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label style="font-weight:400"><input type="checkbox" id="opt-trim"> Trim spaces around lines</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-skip_empty"> Skip empty lines</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-ignore_case"> Ignore upper and lower case</label>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    var lines = text.split("\n");
+    if (o.trim) lines = lines.map(function (l) { return l.trim(); });
+    if (o.skip_empty) lines = lines.filter(function (l) { return l !== ""; });
+    var key = o.ignore_case ? function (l) { return l.toLowerCase(); } : function (l) { return l; };
+    var seen = new Set(), out = [];
+    lines.forEach(function (l) { var k = key(l); if (!seen.has(k)) { seen.add(k); out.push(l); } });
+    return out.join("\n");
+  }
+  function options() { return { trim: $("opt-trim").checked, skip_empty: $("opt-skip_empty").checked, ignore_case: $("opt-ignore_case").checked }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-trim").addEventListener("change", update);
+  $("opt-skip_empty").addEventListener("change", update);
+  $("opt-ignore_case").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "pear\napple\napple\nbanana"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>
