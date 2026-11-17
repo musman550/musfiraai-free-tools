@@ -1,0 +1,57 @@
+<!-- Text to Binary | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label for="opt-mode">Convert</label><select id="opt-mode"><option value="text_to_binary" selected>Text to binary</option><option value="binary_to_text">Binary to text</option></select>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    if (text === "") return "";
+    if (o.mode === "text_to_binary") {
+      var b = new TextEncoder().encode(text), out = [];
+      for (var i = 0; i < b.length; i++) out.push(("00000000" + b[i].toString(2)).slice(-8));
+      return out.join(" ");
+    }
+    var t = text.replace(/\s+/g, "");
+    if (t === "") return "";
+    if (!/^[01]+$/.test(t) || t.length % 8 !== 0) return "Invalid binary";
+    var arr = new Uint8Array(t.length / 8);
+    for (var j = 0; j < arr.length; j++) arr[j] = parseInt(t.substr(j * 8, 8), 2);
+    try { return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(arr); } catch (e) { return "Invalid binary"; }
+  }
+  function options() { return { mode: $("opt-mode").value }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-mode").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "Hi!"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>
