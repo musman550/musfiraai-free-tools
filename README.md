@@ -6,10 +6,11 @@ Live site: https://musman550.github.io/musfiraai-free-tools/tools/
 
 New tools feed (RSS): https://musman550.github.io/musfiraai-free-tools/tools/feed.xml
 
-## Tools (16)
+## Tools (17)
 
 | Tool | What it does |
 |---|---|
+| [Add Line Numbers](https://musman550.github.io/musfiraai-free-tools/tools/add-line-numbers/) | Add a number in front of every line of your text, with a start number, zero padding and a choice of separator. |
 | [Base64 Encoder and Decoder](https://musman550.github.io/musfiraai-free-tools/tools/base64-encoder-and-decoder/) | Encode text to Base64 or decode Base64 back to text in your browser, with URL-safe output and full Unicode support. |
 | [Hex Encoder and Decoder](https://musman550.github.io/musfiraai-free-tools/tools/hex-encoder-and-decoder/) | Convert text to hexadecimal bytes or decode hex back to text in your browser, with spacing and upper or lower case choices. |
 | [JSON Formatter](https://musman550.github.io/musfiraai-free-tools/tools/json-formatter/) | Format, minify and validate JSON in your browser, with exact large numbers, sorted keys and the line and column of the first error. |

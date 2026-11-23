@@ -1,0 +1,66 @@
+<!-- Add Line Numbers | MIT License | (c) 2026 musfiraai | https://github.com/musman550/musfiraai-free-tools -->
+<div class="mf-wrap">
+<div class="mf-in">
+<label for="in">Your text</label>
+<textarea id="in" rows="8" spellcheck="false" autocomplete="off" placeholder="Type or paste here"></textarea>
+<label for="opt-start">Start at</label><input type="number" id="opt-start" min="0" max="100" value="1">
+<label for="opt-sep">After the number</label><select id="opt-sep"><option value="dot" selected>Dot</option><option value="colon">Colon</option><option value="tab">Tab</option><option value="space">Space</option></select>
+<label style="font-weight:400"><input type="checkbox" id="opt-pad"> Pad with zeros</label>
+<label style="font-weight:400"><input type="checkbox" id="opt-skip_empty"> Skip empty lines</label>
+<div class="mf-bar">
+<button type="button" id="run">Update result</button>
+<button type="button" id="sample" class="mf-ghost">Try an example</button>
+<button type="button" id="copy" class="mf-ghost">Copy result</button>
+<button type="button" id="clear" class="mf-ghost">Clear</button>
+</div>
+<p class="mf-status" id="status" role="status"></p>
+</div>
+<div class="mf-out" aria-live="polite">
+<span class="mf-label">Result</span>
+<pre class="mf-code" id="out" tabindex="0"></pre>
+</div>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return root.querySelector("#" + id); };
+  function convert(text, o) {
+    if (text === "") return "";
+    var seps = { dot: ". ", colon: ": ", tab: "\t", space: " " };
+    var lines = text.split("\n"), n = 0, i;
+    for (i = 0; i < lines.length; i++) if (!(o.skip_empty && lines[i] === "")) n++;
+    var last = o.start + Math.max(n, 1) - 1;
+    var width = o.pad ? String(last).length : 0;
+    var out = [], k = o.start;
+    for (i = 0; i < lines.length; i++) {
+      if (o.skip_empty && lines[i] === "") { out.push(""); continue; }
+      var num = String(k);
+      while (num.length < width) num = "0" + num;
+      out.push(num + seps[o.sep] + lines[i]);
+      k++;
+    }
+    return out.join("\n");
+  }
+  function options() { return { start: Number($("opt-start").value), sep: $("opt-sep").value, pad: $("opt-pad").checked, skip_empty: $("opt-skip_empty").checked }; }
+  function update() {
+    var r;
+    try { r = convert($("in").value, options()); } catch (e) { r = "Something went wrong. Please check your input."; }
+    $("out").textContent = String(r);
+    $("status").textContent = $("in").value ? "" : "Type or paste text above.";
+  }
+  $("in").addEventListener("input", update);
+    $("opt-start").addEventListener("input", update);
+  $("opt-sep").addEventListener("change", update);
+  $("opt-pad").addEventListener("change", update);
+  $("opt-skip_empty").addEventListener("change", update);
+  $("run").addEventListener("click", update);
+  $("sample").addEventListener("click", function () { $("in").value = "Hello World, caf\u00e9 123!"; update(); $("status").textContent = "Example loaded."; });
+  $("clear").addEventListener("click", function () { $("in").value = ""; update(); $("in").focus(); });
+  $("copy").addEventListener("click", function () {
+    var t = $("out").textContent, st = $("status");
+    var ok = function () { st.textContent = "Result copied."; };
+    var no = function () { st.textContent = "Copy is blocked in this browser. Select the result and copy it."; };
+    try { navigator.clipboard.writeText(t).then(ok, no); } catch (e) { no(); }
+  });
+  update();
+})();
+</script>
