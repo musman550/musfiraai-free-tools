@@ -1,5 +1,6 @@
 # Musfira AI free tools free tools
 
+- [Remove Accents](https://musman550.github.io/musfiraai-free-tools/tools/remove-accents/): Remove accents and diacritics from text, turning café into cafe, with an option for letters like ß and ø.
 - [Add Line Numbers](https://musman550.github.io/musfiraai-free-tools/tools/add-line-numbers/): Add a number in front of every line of your text, with a start number, zero padding and a choice of separator.
 - [Hex Encoder and Decoder](https://musman550.github.io/musfiraai-free-tools/tools/hex-encoder-and-decoder/): Convert text to hexadecimal bytes or decode hex back to text in your browser, with spacing and upper or lower case choices.
 - [Text to Binary](https://musman550.github.io/musfiraai-free-tools/tools/text-to-binary/): Convert text to binary code and binary back to text, with full Unicode support, in your browser.
